@@ -9,10 +9,12 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
-
+import logging
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import sys
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -119,3 +121,95 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+
+# %(threadName)-14s (%(pathname)s:%(lineno)d)
+CONFIG_BASE_FILE = os.path.dirname(__file__)
+CONSOLE_LOGGING_FORMAT = '%(hostname)s %(asctime)s %(levelname)-8s %(name)s.%(funcName)s: %(message)s'
+CONSOLE_LOGGING_FILE_LOCATION = os.path.join(CONFIG_BASE_FILE.split(f'config{os.sep}settings')[0], 'django-wrds.log')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        'ignore_something': {
+            '()': 'mysite.logging_helpers.IgnoreSomethingFilter',
+        },
+    },
+    'formatters': {
+        'wrds_formatter': {
+            'format': CONSOLE_LOGGING_FORMAT,
+            'class': 'mysite.logging_helpers.ExtendedFormatter',
+        },
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false', 'ignore_something', ],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'wrds_formatter',
+        },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': CONSOLE_LOGGING_FILE_LOCATION,
+            'mode': 'w',
+            'encoding': 'utf-8',
+            'formatter': 'wrds_formatter',
+            'backupCount': 5,
+            'maxBytes': 10485760,
+        },
+    },
+    'loggers': {
+        '': {
+            # The root logger is always defined as an empty string and will pick up all logging that is not collected
+            # by a more specific logger below
+            'handlers': ['console', 'mail_admins', 'file'],
+            'level': os.getenv('ROOT_LOG_LEVEL', 'INFO'),
+        },
+        'django': {
+            # The 'django' logger is configured by Django out of the box. Here, it is reconfigured in order to
+            # utilize the file logger and allow configuration at runtime
+            'handlers': ['console', 'mail_admins', 'file'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+        'django.server': {
+            'propagate': True,
+        },
+        'django.security.DisallowedHost': {
+            'propagate': False,
+            'level': 'ERROR',
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
+
+
+
+def exception_hook(type, value, traceback):
+    """
+    Function to redirect uncaught exceptions to the logger.
+    See https://docs.python.org/3.7/library/sys.html#sys.excepthook for more.
+    :param type: Type of the exception
+    :param value: The exception
+    :param traceback: What was happening as a Traceback object
+    """
+    logging.getLogger('*excepthook*').critical(f'Uncaught Exception!', exc_info=(type, value, traceback))
+
+# The function assigned to sys.excepthook is called only just before control is returned to the prompt; in a Python
+# program this happens just before the program exits.
+sys.excepthook = exception_hook

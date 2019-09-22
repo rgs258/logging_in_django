@@ -8,4 +8,8 @@ urlpatterns = [
     path('<int:pk>/', views.DetailView.as_view(), name='detail'),
     path('<int:pk>/results/', views.ResultsView.as_view(), name='results'),
     path('<int:question_id>/vote/', views.vote, name='vote'),
+
+    path('exception', views.exception, name='exception'),
+    path('exception-404', views.exception_404, name='exception-404'),
+
 ]

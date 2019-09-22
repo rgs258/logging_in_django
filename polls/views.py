@@ -1,10 +1,14 @@
-from django.http import HttpResponseRedirect
+import logging
+
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 from django.views import generic
 
 from .models import Question, Choice
+
+logger = logging.getLogger(__name__)
 
 
 class IndexView(generic.ListView):
@@ -35,6 +39,8 @@ class ResultsView(generic.DetailView):
 
 
 def vote(request, question_id):
+    logger.debug(f"Beginning processing of a vote for question with id {question_id} for user "
+                 f"{getattr(request, 'splat', '')}.")
     question = get_object_or_404(Question, pk=question_id)
     try:
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
@@ -51,3 +57,15 @@ def vote(request, question_id):
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+
+
+class MyGenericException(Exception):
+    pass
+
+
+def exception(request):
+    raise MyGenericException("Just raising an exception")
+
+
+def exception_404(request):
+    raise Http404("Raising a 404 exception")
