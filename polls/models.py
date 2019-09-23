@@ -3,7 +3,9 @@ import datetime
 from django.db import models
 from django.utils import timezone
 
+import logging
 
+logger = logging.getLogger(__name__)
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
@@ -15,6 +17,10 @@ class Question(models.Model):
         now = timezone.now()
         return now - datetime.timedelta(days=1) <= self.pub_date <= now
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        logger.debug(f"Saving a question with text '{self.question_text}'")
+        super().save(force_insert, force_update, using, update_fields)
+
 
 class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
@@ -23,3 +29,10 @@ class Choice(models.Model):
 
     def __str__(self):
         return self.choice_text
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        logger.debug(f"Saving a choice with text '{self.choice_text}'")
+        super().save(force_insert, force_update, using, update_fields)
+
+
+
