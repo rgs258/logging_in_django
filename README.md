@@ -11,7 +11,9 @@ Please feel free to reach out with any questions :)
 Here are the notes from slide #40, if you're interested :)
 We end up at Django’s exception handler on every request because of a middleware trick
 
+```
 1.  WSGI __init__:           runs        load_middleware
 2.  load_middleware:         assigns     convert_exception_to_response      as the     _middleware_chain
 3.  WSGI __call__:           calls       get_response
 4.  get_response             assigns     _middleware_chain                  as the     response
+```
