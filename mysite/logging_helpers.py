@@ -92,7 +92,7 @@ class StreamToLogger(TextIOBase):
         return char_count
 
 
-class IgnoreSomethingFilter(logging.Filter):
+class SomethingFilter(logging.Filter):
     def filter(self, record):
         """
         Filters out log records having the word 'something' in them.

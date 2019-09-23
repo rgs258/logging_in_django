@@ -140,7 +140,7 @@ LOGGING = {
             '()': 'django.utils.log.RequireDebugTrue',
         },
         'ignore_something': {
-            '()': 'mysite.logging_helpers.IgnoreSomethingFilter',
+            '()': 'mysite.logging_helpers.SomethingFilter',
         },
     },
     'formatters': {
@@ -163,7 +163,7 @@ LOGGING = {
         'file': {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': CONSOLE_LOGGING_FILE_LOCATION,
-            'mode': 'w',
+            'mode': 'a',
             'encoding': 'utf-8',
             'formatter': 'wrds_formatter',
             'backupCount': 5,
