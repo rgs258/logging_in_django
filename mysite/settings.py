@@ -144,9 +144,9 @@ LOGGING = {
         },
     },
     'formatters': {
-        'wrds_formatter': {
+        'my_formatter': {
             'format': CONSOLE_LOGGING_FORMAT,
-            'class': 'mysite.logging_helpers.ExtendedFormatter',
+            'class': 'mysite.logging_helpers.HostnameAddingFormatter',
         },
     },
     'handlers': {
@@ -158,14 +158,14 @@ LOGGING = {
         },
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'wrds_formatter',
+            'formatter': 'my_formatter',
         },
         'file': {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': CONSOLE_LOGGING_FILE_LOCATION,
             'mode': 'a',
             'encoding': 'utf-8',
-            'formatter': 'wrds_formatter',
+            'formatter': 'my_formatter',
             'backupCount': 5,
             'maxBytes': 10485760,
         },

@@ -37,7 +37,7 @@ class HostnameAddingFormatter(logging.Formatter):
         return super().format(record)
 
 
-class ExtendedFormatter(logging.Formatter):
+class ExtendedFormatter(HostnameAddingFormatter):
     """
     ExtendedFormatter extends logging.Formatter to provide an extra formatting step whenever extra_data is present on
     the
