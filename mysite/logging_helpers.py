@@ -19,9 +19,28 @@ def extra_data(extra_data, jsonify=False):
     return {'extra_data': {'args': json.dumps(extra_data, cls=DjangoJSONEncoder) if jsonify else extra_data}}
 
 
+class HostnameAddingFormatter(logging.Formatter):
+    """
+    HostnameAddingFormatter adds a hostname, whe it can find one, to the record. The hostname is then available for
+    use int he format string when using this formatter class.
+    """
+
+    def __init__(self, fmt=None, datefmt=None, style='%'):
+        super().__init__(fmt, datefmt, style)
+
+    def format(self, record):
+        # Try to add a hostname attribute to every log record
+        try:
+            record.__dict__['hostname'] = gethostname()
+        except:
+            record.__dict__['hostname'] = 'exception-getting-hostname'
+        return super().format(record)
+
+
 class ExtendedFormatter(logging.Formatter):
     """
-    ExtendedFormatter extends logging.Formatter to provide an extra formatting step whenever extra_data is present on the
+    ExtendedFormatter extends logging.Formatter to provide an extra formatting step whenever extra_data is present on
+    the
     record. This allows for the developer to send additional logging information to the console by passing the result
     of a call to extra_data to the logger as the extra param.
 
