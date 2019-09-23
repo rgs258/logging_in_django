@@ -1,4 +1,4 @@
-# logging_in_django
+# Logging and Exception Handling in Django
 ## The Django Polls app with Logging Examples
 
 Here you'll find some examples of how to use logging, added to the Django Polls app.
