@@ -1,2 +1,2 @@
-Django==2.2.5
+Django==2.2.8
 rollbar==0.14.7
